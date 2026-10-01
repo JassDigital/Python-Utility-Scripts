@@ -1,37 +1,3787 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="A JASS Digital Lab software project.">
-<link rel="canonical" href="https://Fanu2.github.io/Python-Utility-Scripts/">
-<title>Python-Utility-Scripts - JASS Digital Lab</title>
-<link rel="stylesheet" href="jass-global.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JASS Python Utility Scripts</title>
+
+<meta
+  name="description"
+  content="A practical collection of Python tools for files, media, data, automation, system utilities, and developer workflows."
+/>
+
 <style>
-.hero-art{width:100%;display:block;border-radius:28px;border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 90px rgba(0,0,0,.35);margin:24px 0 30px}
-.meta{display:inline-block;padding:7px 12px;border-radius:999px;background:rgba(192,132,252,.12);border:1px solid rgba(192,132,252,.2);color:#ddd6fe;font-size:.86rem}
+:root {
+  --bg: #07111f;
+  --panel: #0d1b2e;
+  --panel2: #10243b;
+  --border: rgba(255,255,255,.10);
+  --text: #eef5ff;
+  --muted: #9fb1c7;
+  --accent: #66d9ef;
+  --accent2: #9b8cff;
+  --shadow: 0 20px 50px rgba(0,0,0,.30);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, #142b48 0, transparent 35%),
+    radial-gradient(circle at top right, #20204d 0, transparent 30%),
+    var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero {
+  min-height: 460px;
+  padding: 55px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7,17,31,.95),
+      rgba(7,17,31,.72),
+      rgba(7,17,31,.92)
+    ),
+    url("hero.png") center/cover no-repeat;
+  opacity: .65;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 1050px;
+  width: 100%;
+  z-index: 2;
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 8px 13px;
+  border: 1px solid rgba(102,217,239,.35);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: clamp(42px, 7vw, 78px);
+  line-height: .98;
+  margin: 0 0 22px;
+  max-width: 850px;
+  letter-spacing: -.04em;
+}
+
+.hero p {
+  max-width: 760px;
+  color: #c5d2e2;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.07);
+  font-weight: 700;
+}
+
+.button.primary {
+  background: var(--accent);
+  color: #06111d;
+}
+
+.container {
+  max-width: 1250px;
+  margin: auto;
+  padding: 35px 22px 70px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.stat {
+  background: rgba(13,27,46,.82);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.stat strong {
+  display: block;
+  font-size: 28px;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.controls {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 15px 0;
+  background: rgba(7,17,31,.88);
+  backdrop-filter: blur(14px);
+}
+
+.search {
+  width: 100%;
+  padding: 15px 17px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: white;
+  outline: none;
+  font-size: 16px;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 13px 0 25px;
+}
+
+.chip {
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.chip.active,
+.chip:hover {
+  color: var(--text);
+  border-color: rgba(102,217,239,.5);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  gap: 15px;
+  padding: 19px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(16,36,59,.96),
+      rgba(13,27,46,.96)
+    );
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-height: 205px;
+  transition: transform .18s ease, border-color .18s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(102,217,239,.35);
+}
+
+.icon {
+  font-size: 29px;
+  flex: 0 0 auto;
+}
+
+.card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.category {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+h3 {
+  margin: 7px 0;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.card p {
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  color: #778ca4;
+  font-size: 11px;
+  margin: 12px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions a {
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: rgba(255,255,255,.07);
+}
+
+.actions a:hover {
+  background: rgba(102,217,239,.15);
+}
+
+.empty {
+  display: none;
+  padding: 50px;
+  text-align: center;
+  color: var(--muted);
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 30px 22px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 750px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 450px) {
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
+
 <body>
-<div class="wrap">
+
 <section class="hero">
-<span class="badge">JASS DIGITAL LAB - Developer Tools and Web</span>
-<img class="hero-art" src="hero.png" alt="Python-Utility-Scripts hero artwork">
-<span class="meta">Developer Tools and Web</span>
-<h1>Python-Utility-Scripts</h1>
-<p class="lead">A JASS Digital Lab software project.</p>
-<div>
-<a class="btn primary" href="https://Fanu2.github.io/Python-Utility-Scripts/">Open Live Project Page</a>
-<a class="btn" href="https://github.com/Fanu2/Python-Utility-Scripts">GitHub Repository</a>
-<a class="btn" href="https://github.com/Fanu2/Python-Utility-Scripts#readme">README</a>
-</div>
+  <div class="hero-content">
+
+    <div class="eyebrow">JASS Digital Lab · Python Collection</div>
+
+    <h1>JASS Python Utility Scripts</h1>
+
+    <p>A practical collection of Python tools for files, media, data, automation, system utilities, and developer workflows.</p>
+
+    <div class="hero-actions">
+      <a class="button primary" href="#utilities">
+        Explore Utilities
+      </a>
+
+      <a
+        class="button"
+        href="https://github.com/Fanu2/Python-Utility-Scripts"
+        target="_blank"
+      >
+        View GitHub Repository
+      </a>
+    </div>
+
+  </div>
 </section>
-<section class="grid">
-<div class="card"><h2>About this project</h2><p>This project is part of JASS Digital Lab - a practical software laboratory for building, preserving, exploring and modernizing useful digital tools.</p></div>
-<div class="card"><h2>Explore the source</h2><p>The complete source code, documentation and project history are available in the GitHub repository.</p></div>
-<div class="card"><h2>JASS Philosophy</h2><p>Independent software - local-first workflows - reusable components - long-term digital preservation.</p></div>
-</section>
-<footer>JASS Digital Lab - Fanu2 - <a href="https://github.com/Fanu2/Python-Utility-Scripts">GitHub</a></footer>
-</div>
+
+<main class="container" id="utilities">
+
+  <section class="stats">
+    <div class="stat">
+      <strong>133</strong>
+      <span>Total files</span>
+    </div>
+
+    <div class="stat">
+      <strong>124</strong>
+      <span>Python scripts</span>
+    </div>
+
+    <div class="stat">
+      <strong>10</strong>
+      <span>Categories</span>
+    </div>
+
+    <div class="stat">
+      <strong>1.7 MB</strong>
+      <span>Collection size</span>
+    </div>
+  </section>
+
+  <section class="controls">
+
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="Search scripts, tools, categories..."
+      autocomplete="off"
+    >
+
+    <div class="chips">
+      <button class="chip active" data-category="All">
+        All
+      </button>
+      <button class="chip" data-category="Data &amp; Formats">Data &amp; Formats</button><button class="chip" data-category="Database">Database</button><button class="chip" data-category="Documents &amp; Text">Documents &amp; Text</button><button class="chip" data-category="Files &amp; Folders">Files &amp; Folders</button><button class="chip" data-category="Image Tools">Image Tools</button><button class="chip" data-category="JASS Applications">JASS Applications</button><button class="chip" data-category="Media Tools">Media Tools</button><button class="chip" data-category="Python Utilities">Python Utilities</button><button class="chip" data-category="System Utilities">System Utilities</button><button class="chip" data-category="Web &amp; Automation">Web &amp; Automation</button>
+    </div>
+
+  </section>
+
+  <section class="grid" id="grid">
+    
+      <article class="card" data-search=".gitignore python utilities .gitignore">
+        <div class="icon">📦</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>.gitignore</h3>
+
+          <p>.gitignore</p>
+
+          <div class="meta">
+            <span>61 B</span>
+            <span>file</span>
+          </div>
+
+          <div class="actions">
+            <a href=".gitignore" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/.gitignore"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="add_background_music_to_slideshow.py media tools add background music to slideshow">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>add_background_music_to_slideshow.py</h3>
+
+          <p>Add background music to slideshow</p>
+
+          <div class="meta">
+            <span>581 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="add_background_music_to_slideshow.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/add_background_music_to_slideshow.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="add_logo_watermark_to_image.py image tools add logo watermark to image">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>add_logo_watermark_to_image.py</h3>
+
+          <p>Add logo watermark to image</p>
+
+          <div class="meta">
+            <span>358 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="add_logo_watermark_to_image.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/add_logo_watermark_to_image.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="add_subtitle_to_video.py media tools add subtitle to video">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>add_subtitle_to_video.py</h3>
+
+          <p>Add subtitle to video</p>
+
+          <div class="meta">
+            <span>579 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="add_subtitle_to_video.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/add_subtitle_to_video.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="add_text_overlay.py media tools add text overlay">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>add_text_overlay.py</h3>
+
+          <p>Add text overlay</p>
+
+          <div class="meta">
+            <span>447 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="add_text_overlay.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/add_text_overlay.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="add_transition_between_videos.py media tools add transition between videos">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>add_transition_between_videos.py</h3>
+
+          <p>Add transition between videos</p>
+
+          <div class="meta">
+            <span>497 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="add_transition_between_videos.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/add_transition_between_videos.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="api_data_fetch.py data &amp; formats api data fetch">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>api_data_fetch.py</h3>
+
+          <p>Api data fetch</p>
+
+          <div class="meta">
+            <span>171 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="api_data_fetch.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/api_data_fetch.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="api_data_post.py data &amp; formats api data post">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>api_data_post.py</h3>
+
+          <p>Api data post</p>
+
+          <div class="meta">
+            <span>166 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="api_data_post.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/api_data_post.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="api_data_put.py data &amp; formats api data put">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>api_data_put.py</h3>
+
+          <p>Api data put</p>
+
+          <div class="meta">
+            <span>171 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="api_data_put.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/api_data_put.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="apply_contrast_enhancement.py image tools apply contrast enhancement">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>apply_contrast_enhancement.py</h3>
+
+          <p>Apply contrast enhancement</p>
+
+          <div class="meta">
+            <span>344 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="apply_contrast_enhancement.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/apply_contrast_enhancement.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="apply_gaussian_blur_to_video.py image tools apply gaussian blur to video">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>apply_gaussian_blur_to_video.py</h3>
+
+          <p>Apply gaussian blur to video</p>
+
+          <div class="meta">
+            <span>380 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="apply_gaussian_blur_to_video.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/apply_gaussian_blur_to_video.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="apply_sepia_filter_to_image.py image tools apply sepia filter to image">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>apply_sepia_filter_to_image.py</h3>
+
+          <p>Apply sepia filter to image</p>
+
+          <div class="meta">
+            <span>314 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="apply_sepia_filter_to_image.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/apply_sepia_filter_to_image.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="browser_automation.py web &amp; automation browser automation">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>browser_automation.py</h3>
+
+          <p>Browser automation</p>
+
+          <div class="meta">
+            <span>201 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="browser_automation.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/browser_automation.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="contact_list_exporter.py python utilities contact list exporter">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>contact_list_exporter.py</h3>
+
+          <p>Contact list exporter</p>
+
+          <div class="meta">
+            <span>389 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="contact_list_exporter.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/contact_list_exporter.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="convert_image_to_grayscale.py image tools convert image to grayscale">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>convert_image_to_grayscale.py</h3>
+
+          <p>Convert image to grayscale</p>
+
+          <div class="meta">
+            <span>279 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="convert_image_to_grayscale.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/convert_image_to_grayscale.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="convert_video_frames_to_images.py image tools convert video frames to images">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>convert_video_frames_to_images.py</h3>
+
+          <p>Convert video frames to images</p>
+
+          <div class="meta">
+            <span>380 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="convert_video_frames_to_images.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/convert_video_frames_to_images.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="cpu_usage.py system utilities cpu usage">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>cpu_usage.py</h3>
+
+          <p>Cpu usage</p>
+
+          <div class="meta">
+            <span>96 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="cpu_usage.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/cpu_usage.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="create_collage_from_images.py image tools create collage from images">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>create_collage_from_images.py</h3>
+
+          <p>Create collage from images</p>
+
+          <div class="meta">
+            <span>417 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="create_collage_from_images.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/create_collage_from_images.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="create_gif_from_video.py media tools create gif from video">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>create_gif_from_video.py</h3>
+
+          <p>Create gif from video</p>
+
+          <div class="meta">
+            <span>299 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="create_gif_from_video.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/create_gif_from_video.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="crop_video.py image tools crop video">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>crop_video.py</h3>
+
+          <p>Crop video</p>
+
+          <div class="meta">
+            <span>372 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="crop_video.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/crop_video.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="csv_to_json.py data &amp; formats csv to json">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>csv_to_json.py</h3>
+
+          <p>Csv to json</p>
+
+          <div class="meta">
+            <span>329 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="csv_to_json.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/csv_to_json.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="currency_converter.py python utilities currency converter">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>currency_converter.py</h3>
+
+          <p>Currency converter</p>
+
+          <div class="meta">
+            <span>476 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="currency_converter.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/currency_converter.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="data_cleaner.py data &amp; formats data cleaner">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>data_cleaner.py</h3>
+
+          <p>Data cleaner</p>
+
+          <div class="meta">
+            <span>139 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="data_cleaner.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/data_cleaner.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="data_visualization.py data &amp; formats data visualization">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>data_visualization.py</h3>
+
+          <p>Data visualization</p>
+
+          <div class="meta">
+            <span>178 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="data_visualization.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/data_visualization.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="database_backup.py data &amp; formats database backup">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>database_backup.py</h3>
+
+          <p>Database backup</p>
+
+          <div class="meta">
+            <span>193 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="database_backup.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/database_backup.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="directory_watcher.py files &amp; folders directory watcher">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>directory_watcher.py</h3>
+
+          <p>Directory watcher</p>
+
+          <div class="meta">
+            <span>880 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="directory_watcher.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/directory_watcher.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="disk_usage.py system utilities disk usage">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>disk_usage.py</h3>
+
+          <p>Disk usage</p>
+
+          <div class="meta">
+            <span>239 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="disk_usage.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/disk_usage.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="email_automation.py web &amp; automation email automation">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>email_automation.py</h3>
+
+          <p>Email automation</p>
+
+          <div class="meta">
+            <span>327 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="email_automation.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/email_automation.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="excel_automation.py data &amp; formats excel automation">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>excel_automation.py</h3>
+
+          <p>Excel automation</p>
+
+          <div class="meta">
+            <span>141 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="excel_automation.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/excel_automation.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="extract_audio_from_video.py files &amp; folders extract audio from video">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>extract_audio_from_video.py</h3>
+
+          <p>Extract audio from video</p>
+
+          <div class="meta">
+            <span>260 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="extract_audio_from_video.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/extract_audio_from_video.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="extract_frames_at_interval.py files &amp; folders extract frames at interval">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>extract_frames_at_interval.py</h3>
+
+          <p>Extract frames at interval</p>
+
+          <div class="meta">
+            <span>413 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="extract_frames_at_interval.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/extract_frames_at_interval.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="file_compressor.py files &amp; folders file compressor">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>file_compressor.py</h3>
+
+          <p>File compressor</p>
+
+          <div class="meta">
+            <span>272 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="file_compressor.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/file_compressor.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="file_content_replacer.py files &amp; folders file content replacer">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>file_content_replacer.py</h3>
+
+          <p>File content replacer</p>
+
+          <div class="meta">
+            <span>339 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="file_content_replacer.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/file_content_replacer.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="file_extractor.py files &amp; folders file extractor">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>file_extractor.py</h3>
+
+          <p>File extractor</p>
+
+          <div class="meta">
+            <span>248 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="file_extractor.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/file_extractor.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="file_renaming.py files &amp; folders file renaming">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>file_renaming.py</h3>
+
+          <p>File renaming</p>
+
+          <div class="meta">
+            <span>219 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="file_renaming.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/file_renaming.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="file_searcher.py files &amp; folders file searcher">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>file_searcher.py</h3>
+
+          <p>File searcher</p>
+
+          <div class="meta">
+            <span>246 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="file_searcher.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/file_searcher.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="ftp_uploader.py web &amp; automation ftp uploader">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>ftp_uploader.py</h3>
+
+          <p>Ftp uploader</p>
+
+          <div class="meta">
+            <span>224 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="ftp_uploader.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/ftp_uploader.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="generate_video_thumbnail.py image tools generate video thumbnail">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>generate_video_thumbnail.py</h3>
+
+          <p>Generate video thumbnail</p>
+
+          <div class="meta">
+            <span>319 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="generate_video_thumbnail.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/generate_video_thumbnail.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="git_repo_cloner.py python utilities git repo cloner">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>git_repo_cloner.py</h3>
+
+          <p>Git repo cloner</p>
+
+          <div class="meta">
+            <span>254 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="git_repo_cloner.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/git_repo_cloner.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="hero.png python utilities hero.png">
+        <div class="icon">🖼️</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>hero.png</h3>
+
+          <p>Hero.png</p>
+
+          <div class="meta">
+            <span>170.1 KB</span>
+            <span>.png</span>
+          </div>
+
+          <div class="actions">
+            <a href="hero.png" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/hero.png"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="html_report_generator.py documents &amp; text html report generator">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>html_report_generator.py</h3>
+
+          <p>Html report generator</p>
+
+          <div class="meta">
+            <span>256 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="html_report_generator.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/html_report_generator.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="html_table_to_csv.py data &amp; formats html table to csv">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>html_table_to_csv.py</h3>
+
+          <p>Html table to csv</p>
+
+          <div class="meta">
+            <span>159 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="html_table_to_csv.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/html_table_to_csv.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="image_downloader.py image tools image downloader">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>image_downloader.py</h3>
+
+          <p>Image downloader</p>
+
+          <div class="meta">
+            <span>267 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="image_downloader.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/image_downloader.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="image_resizer.py image tools image resizer">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>image_resizer.py</h3>
+
+          <p>Image resizer</p>
+
+          <div class="meta">
+            <span>203 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="image_resizer.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/image_resizer.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="image_to_grayscale.py image tools image to grayscale">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>image_to_grayscale.py</h3>
+
+          <p>Image to grayscale</p>
+
+          <div class="meta">
+            <span>245 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="image_to_grayscale.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/image_to_grayscale.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="image.jpg image tools image.jpg">
+        <div class="icon">🖼️</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>image.jpg</h3>
+
+          <p>Image.jpg</p>
+
+          <div class="meta">
+            <span>512.3 KB</span>
+            <span>.jpg</span>
+          </div>
+
+          <div class="actions">
+            <a href="image.jpg" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/image.jpg"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_advanced_renamer_v1.7.py files &amp; folders jass advanced renamer v1.7">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Advanced_Renamer_v1.7.py</h3>
+
+          <p>JASS Advanced Renamer v1.7</p>
+
+          <div class="meta">
+            <span>46.3 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Advanced_Renamer_v1.7.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Advanced_Renamer_v1.7.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_big_file_duplicate_cleaner_v1.0.py files &amp; folders jass big file duplicate cleaner v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Big_File_Duplicate_Cleaner_v1.0.py</h3>
+
+          <p>JASS Big File Duplicate Cleaner v1.0</p>
+
+          <div class="meta">
+            <span>16.4 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Big_File_Duplicate_Cleaner_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Big_File_Duplicate_Cleaner_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_book_reader_pro.py documents &amp; text jass book reader pro">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>jass_book_reader_pro.py</h3>
+
+          <p>JASS book reader pro</p>
+
+          <div class="meta">
+            <span>41.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_book_reader_pro.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_book_reader_pro.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_book_reader.py documents &amp; text jass book reader">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>jass_book_reader.py</h3>
+
+          <p>JASS book reader</p>
+
+          <div class="meta">
+            <span>26.2 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_book_reader.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_book_reader.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_csv_explorer_v1.0.py data &amp; formats jass csv explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>JASS_CSV_Explorer_v1.0.py</h3>
+
+          <p>JASS CSV Explorer v1.0</p>
+
+          <div class="meta">
+            <span>14.7 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_CSV_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_CSV_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_csv_explorer_v1.1.py data &amp; formats jass csv explorer v1.1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>JASS_CSV_Explorer_v1.1.py</h3>
+
+          <p>JASS CSV Explorer v1.1</p>
+
+          <div class="meta">
+            <span>14.7 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_CSV_Explorer_v1.1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_CSV_Explorer_v1.1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_document_cataloger_v1.0.py documents &amp; text jass document cataloger v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>JASS_Document_Cataloger_v1.0.py</h3>
+
+          <p>JASS Document Cataloger v1.0</p>
+
+          <div class="meta">
+            <span>14.7 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Document_Cataloger_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Document_Cataloger_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_duplicate_file_remover_v1.7.py files &amp; folders jass duplicate file remover v1.7">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Duplicate_File_Remover_v1.7.py</h3>
+
+          <p>JASS Duplicate File Remover v1.7</p>
+
+          <div class="meta">
+            <span>25.1 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Duplicate_File_Remover_v1.7.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Duplicate_File_Remover_v1.7.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_empty_folder_remover_v1.1.py files &amp; folders jass empty folder remover v1.1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Empty_Folder_Remover_v1.1.py</h3>
+
+          <p>JASS Empty Folder Remover v1.1</p>
+
+          <div class="meta">
+            <span>16.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Empty_Folder_Remover_v1.1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Empty_Folder_Remover_v1.1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_english_love_literature_explorer_v2_0.py jass applications jass english love literature explorer v2 0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>JASS_English_Love_Literature_Explorer_v2_0.py</h3>
+
+          <p>JASS English Love Literature Explorer v2 0</p>
+
+          <div class="meta">
+            <span>18.2 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_English_Love_Literature_Explorer_v2_0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_English_Love_Literature_Explorer_v2_0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_english_love_literature_explorer_v2_5_creative_studio.py jass applications jass english love literature explorer v2 5 creative studio">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>JASS_English_Love_Literature_Explorer_v2_5_Creative_Studio.py</h3>
+
+          <p>JASS English Love Literature Explorer v2 5 Creative Studio</p>
+
+          <div class="meta">
+            <span>73.7 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_English_Love_Literature_Explorer_v2_5_Creative_Studio.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_English_Love_Literature_Explorer_v2_5_Creative_Studio.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_english_mizo_dictionary_pro_v2.py jass applications jass english mizo dictionary pro v2">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_english_mizo_dictionary_pro_v2.py</h3>
+
+          <p>JASS english mizo dictionary pro v2</p>
+
+          <div class="meta">
+            <span>39.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_english_mizo_dictionary_pro_v2.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_english_mizo_dictionary_pro_v2.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_english_mizo_dictionary_pro.py jass applications jass english mizo dictionary pro">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_english_mizo_dictionary_pro.py</h3>
+
+          <p>JASS english mizo dictionary pro</p>
+
+          <div class="meta">
+            <span>28.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_english_mizo_dictionary_pro.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_english_mizo_dictionary_pro.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_epub_library_manager_v1.0.py documents &amp; text jass epub library manager v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>JASS_EPUB_Library_Manager_v1.0.py</h3>
+
+          <p>JASS EPUB Library Manager v1.0</p>
+
+          <div class="meta">
+            <span>21.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_EPUB_Library_Manager_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_EPUB_Library_Manager_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_f_drive_explorer_v1.0.py python utilities jass f drive explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>JASS_F_Drive_Explorer_v1.0.py</h3>
+
+          <p>JASS F Drive Explorer v1.0</p>
+
+          <div class="meta">
+            <span>12.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_F_Drive_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_F_Drive_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_file_organizer_pro_v1.0_fixed.py files &amp; folders jass file organizer pro v1.0 fixed">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_File_Organizer_Pro_v1.0_fixed.py</h3>
+
+          <p>JASS File Organizer Pro v1.0 fixed</p>
+
+          <div class="meta">
+            <span>21.7 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_File_Organizer_Pro_v1.0_fixed.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_File_Organizer_Pro_v1.0_fixed.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_file_organizer_pro_v1.0.1.py files &amp; folders jass file organizer pro v1.0.1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_File_Organizer_Pro_v1.0.1.py</h3>
+
+          <p>JASS File Organizer Pro v1.0.1</p>
+
+          <div class="meta">
+            <span>21.7 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_File_Organizer_Pro_v1.0.1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_File_Organizer_Pro_v1.0.1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_file_organizer_pro_v1.0.2.py files &amp; folders jass file organizer pro v1.0.2">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_File_Organizer_Pro_v1.0.2.py</h3>
+
+          <p>JASS File Organizer Pro v1.0.2</p>
+
+          <div class="meta">
+            <span>23.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_File_Organizer_Pro_v1.0.2.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_File_Organizer_Pro_v1.0.2.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_folder_snapshot_compare_v1.0.py files &amp; folders jass folder snapshot compare v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Folder_Snapshot_Compare_v1.0.py</h3>
+
+          <p>JASS Folder Snapshot Compare v1.0</p>
+
+          <div class="meta">
+            <span>21.4 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Folder_Snapshot_Compare_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Folder_Snapshot_Compare_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_folder_statistics_studio_v1.0.py files &amp; folders jass folder statistics studio v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Folder_Statistics_Studio_v1.0.py</h3>
+
+          <p>JASS Folder Statistics Studio v1.0</p>
+
+          <div class="meta">
+            <span>13.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Folder_Statistics_Studio_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Folder_Statistics_Studio_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_image_metadata_explorer_v1.0.py image tools jass image metadata explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>JASS_Image_Metadata_Explorer_v1.0.py</h3>
+
+          <p>JASS Image Metadata Explorer v1.0</p>
+
+          <div class="meta">
+            <span>19.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Image_Metadata_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Image_Metadata_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_ini_config_explorer_v1.0.py python utilities jass ini config explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>JASS_INI_Config_Explorer_v1.0.py</h3>
+
+          <p>JASS INI Config Explorer v1.0</p>
+
+          <div class="meta">
+            <span>14.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_INI_Config_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_INI_Config_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_json_explorer_v1.0.py data &amp; formats jass json explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>JASS_JSON_Explorer_v1.0.py</h3>
+
+          <p>JASS JSON Explorer v1.0</p>
+
+          <div class="meta">
+            <span>14.8 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_JSON_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_JSON_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_landsoft_explorer_v1.0.py jass applications jass landsoft explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>JASS_Landsoft_Explorer_v1.0.py</h3>
+
+          <p>JASS Landsoft Explorer v1.0</p>
+
+          <div class="meta">
+            <span>26.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Landsoft_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Landsoft_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_landsoft_explorer_v2.0.py jass applications jass landsoft explorer v2.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>JASS_Landsoft_Explorer_v2.0.py</h3>
+
+          <p>JASS Landsoft Explorer v2.0</p>
+
+          <div class="meta">
+            <span>27.5 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Landsoft_Explorer_v2.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Landsoft_Explorer_v2.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_media_inventory_v1.0.py media tools jass media inventory v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>JASS_Media_Inventory_v1.0.py</h3>
+
+          <p>JASS Media Inventory v1.0</p>
+
+          <div class="meta">
+            <span>17.5 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Media_Inventory_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Media_Inventory_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_mizo_corpus_converter_v1.py jass applications jass mizo corpus converter v1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_mizo_corpus_converter_v1.py</h3>
+
+          <p>JASS mizo corpus converter v1</p>
+
+          <div class="meta">
+            <span>15.3 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_mizo_corpus_converter_v1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_mizo_corpus_converter_v1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_mizo_corpus_studio_v1.py jass applications jass mizo corpus studio v1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_mizo_corpus_studio_v1.py</h3>
+
+          <p>JASS mizo corpus studio v1</p>
+
+          <div class="meta">
+            <span>21.6 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_mizo_corpus_studio_v1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_mizo_corpus_studio_v1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_mizo_corpus_studio_v2.py jass applications jass mizo corpus studio v2">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_mizo_corpus_studio_v2.py</h3>
+
+          <p>JASS mizo corpus studio v2</p>
+
+          <div class="meta">
+            <span>32.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_mizo_corpus_studio_v2.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_mizo_corpus_studio_v2.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_nested_folder_updater_v1.1_fixed.py files &amp; folders jass nested folder updater v1.1 fixed">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Nested_Folder_Updater_v1.1_fixed.py</h3>
+
+          <p>JASS Nested Folder Updater v1.1 fixed</p>
+
+          <div class="meta">
+            <span>12.2 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Nested_Folder_Updater_v1.1_fixed.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Nested_Folder_Updater_v1.1_fixed.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_offline_facebook_v1.3.py documents &amp; text jass offline facebook v1.3">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>JASS_Offline_Facebook_v1.3.py</h3>
+
+          <p>JASS Offline Facebook v1.3</p>
+
+          <div class="meta">
+            <span>23.5 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Offline_Facebook_v1.3.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Offline_Facebook_v1.3.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_pdf_toolkit_v1.1.py documents &amp; text jass pdf toolkit v1.1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>JASS_PDF_Toolkit_v1.1.py</h3>
+
+          <p>JASS PDF Toolkit v1.1</p>
+
+          <div class="meta">
+            <span>19.4 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_PDF_Toolkit_v1.1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_PDF_Toolkit_v1.1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_portable_app_manager_v1.0.py jass applications jass portable app manager v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>JASS_Portable_App_Manager_v1.0.py</h3>
+
+          <p>JASS Portable App Manager v1.0</p>
+
+          <div class="meta">
+            <span>23.6 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Portable_App_Manager_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Portable_App_Manager_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_punjabi_transliteration_studio_v1_0.py jass applications jass punjabi transliteration studio v1 0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_punjabi_transliteration_studio_v1_0.py</h3>
+
+          <p>JASS punjabi transliteration studio v1 0</p>
+
+          <div class="meta">
+            <span>21.2 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_punjabi_transliteration_studio_v1_0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_punjabi_transliteration_studio_v1_0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_punjabi_transliterator_v1_0.py jass applications jass punjabi transliterator v1 0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>jass_punjabi_transliterator_v1_0.py</h3>
+
+          <p>JASS punjabi transliterator v1 0</p>
+
+          <div class="meta">
+            <span>20.2 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass_punjabi_transliterator_v1_0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass_punjabi_transliterator_v1_0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_romance_studio_v1.0.py jass applications jass romance studio v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">JASS Applications</div>
+
+          <h3>JASS_Romance_Studio_v1.0.py</h3>
+
+          <p>JASS Romance Studio v1.0</p>
+
+          <div class="meta">
+            <span>17.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Romance_Studio_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Romance_Studio_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_sqlite_explorer_v1.0.py database jass sqlite explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Database</div>
+
+          <h3>JASS_SQLite_Explorer_v1.0.py</h3>
+
+          <p>JASS SQLite Explorer v1.0</p>
+
+          <div class="meta">
+            <span>17.4 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_SQLite_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_SQLite_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_subfolder_consolidator_v1.1.py files &amp; folders jass subfolder consolidator v1.1">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Subfolder_Consolidator_v1.1.py</h3>
+
+          <p>JASS Subfolder Consolidator v1.1</p>
+
+          <div class="meta">
+            <span>16.1 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Subfolder_Consolidator_v1.1.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Subfolder_Consolidator_v1.1.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_system_inspector_v1.0.py system utilities jass system inspector v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>JASS_System_Inspector_v1.0.py</h3>
+
+          <p>JASS System Inspector v1.0</p>
+
+          <div class="meta">
+            <span>18.8 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_System_Inspector_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_System_Inspector_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_text_file_analyzer_v1.0.py files &amp; folders jass text file analyzer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>JASS_Text_File_Analyzer_v1.0.py</h3>
+
+          <p>JASS Text File Analyzer v1.0</p>
+
+          <div class="meta">
+            <span>17.1 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Text_File_Analyzer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Text_File_Analyzer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_windows_power_center_v1.0.py system utilities jass windows power center v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>JASS_Windows_Power_Center_v1.0.py</h3>
+
+          <p>JASS Windows Power Center v1.0</p>
+
+          <div class="meta">
+            <span>24.1 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Windows_Power_Center_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Windows_Power_Center_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_windows_startup_manager_v1.0.py system utilities jass windows startup manager v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>JASS_Windows_Startup_Manager_v1.0.py</h3>
+
+          <p>JASS Windows Startup Manager v1.0</p>
+
+          <div class="meta">
+            <span>16.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_Windows_Startup_Manager_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_Windows_Startup_Manager_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass_xml_explorer_v1.0.py data &amp; formats jass xml explorer v1.0">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>JASS_XML_Explorer_v1.0.py</h3>
+
+          <p>JASS XML Explorer v1.0</p>
+
+          <div class="meta">
+            <span>10.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="JASS_XML_Explorer_v1.0.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/JASS_XML_Explorer_v1.0.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="jass-global.css python utilities jass global.css">
+        <div class="icon">🎨</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>jass-global.css</h3>
+
+          <p>JASS global.css</p>
+
+          <div class="meta">
+            <span>2.0 KB</span>
+            <span>.css</span>
+          </div>
+
+          <div class="actions">
+            <a href="jass-global.css" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/jass-global.css"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="json_data_merger.py data &amp; formats json data merger">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>json_data_merger.py</h3>
+
+          <p>Json data merger</p>
+
+          <div class="meta">
+            <span>381 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="json_data_merger.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/json_data_merger.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="json_formatter.py data &amp; formats json formatter">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>json_formatter.py</h3>
+
+          <p>Json formatter</p>
+
+          <div class="meta">
+            <span>204 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="json_formatter.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/json_formatter.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="json_to_csv.py data &amp; formats json to csv">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>json_to_csv.py</h3>
+
+          <p>Json to csv</p>
+
+          <div class="meta">
+            <span>313 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="json_to_csv.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/json_to_csv.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="license python utilities license">
+        <div class="icon">📦</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>LICENSE</h3>
+
+          <p>LICENSE</p>
+
+          <div class="meta">
+            <span>1.1 KB</span>
+            <span>file</span>
+          </div>
+
+          <div class="actions">
+            <a href="LICENSE" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/LICENSE"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="list_landsoft_files.py files &amp; folders list landsoft files">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>list_landsoft_files.py</h3>
+
+          <p>List landsoft files</p>
+
+          <div class="meta">
+            <span>7.5 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="list_landsoft_files.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/list_landsoft_files.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="log_file_reader.py files &amp; folders log file reader">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>log_file_reader.py</h3>
+
+          <p>Log file reader</p>
+
+          <div class="meta">
+            <span>166 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="log_file_reader.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/log_file_reader.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="main.py python utilities main">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>main.py</h3>
+
+          <p>Main</p>
+
+          <div class="meta">
+            <span>8.9 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="main.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/main.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="memory_usage.py system utilities memory usage">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>memory_usage.py</h3>
+
+          <p>Memory usage</p>
+
+          <div class="meta">
+            <span>243 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="memory_usage.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/memory_usage.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="network_info.py system utilities network info">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>network_info.py</h3>
+
+          <p>Network info</p>
+
+          <div class="meta">
+            <span>295 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="network_info.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/network_info.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="overlay_text_on_video.py media tools overlay text on video">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>overlay_text_on_video.py</h3>
+
+          <p>Overlay text on video</p>
+
+          <div class="meta">
+            <span>565 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="overlay_text_on_video.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/overlay_text_on_video.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="pageforge.md python utilities pageforge.md">
+        <div class="icon">📝</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>PageForge.md</h3>
+
+          <p>PageForge.md</p>
+
+          <div class="meta">
+            <span>5.9 KB</span>
+            <span>.md</span>
+          </div>
+
+          <div class="actions">
+            <a href="PageForge.md" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/PageForge.md"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="pageforge.py python utilities pageforge">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>pageforge.py</h3>
+
+          <p>Pageforge</p>
+
+          <div class="meta">
+            <span>13.1 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="pageforge.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/pageforge.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="pages.yml python utilities pages.yml">
+        <div class="icon">📦</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>pages.yml</h3>
+
+          <p>Pages.yml</p>
+
+          <div class="meta">
+            <span>711 B</span>
+            <span>.yml</span>
+          </div>
+
+          <div class="actions">
+            <a href=".github/workflows/pages.yml" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/.github/workflows/pages.yml"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="pdf_merger.py documents &amp; text pdf merger">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>pdf_merger.py</h3>
+
+          <p>Pdf merger</p>
+
+          <div class="meta">
+            <span>187 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="pdf_merger.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/pdf_merger.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="pdf_to_text.py documents &amp; text pdf to text">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>pdf_to_text.py</h3>
+
+          <p>Pdf to text</p>
+
+          <div class="meta">
+            <span>344 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="pdf_to_text.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/pdf_to_text.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="qr_code_generator.py python utilities qr code generator">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>qr_code_generator.py</h3>
+
+          <p>Qr code generator</p>
+
+          <div class="meta">
+            <span>96 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="qr_code_generator.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/qr_code_generator.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="readme.md python utilities readme.md">
+        <div class="icon">📝</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>README.md</h3>
+
+          <p>README.md</p>
+
+          <div class="meta">
+            <span>1.2 KB</span>
+            <span>.md</span>
+          </div>
+
+          <div class="actions">
+            <a href="README.md" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/README.md"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="regex_search.py data &amp; formats regex search">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>regex_search.py</h3>
+
+          <p>Regex search</p>
+
+          <div class="meta">
+            <span>166 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="regex_search.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/regex_search.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="requirements.txt python utilities requirements.txt">
+        <div class="icon">📄</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>requirements.txt</h3>
+
+          <p>Requirements.txt</p>
+
+          <div class="meta">
+            <span>89 B</span>
+            <span>.txt</span>
+          </div>
+
+          <div class="actions">
+            <a href="requirements.txt" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/requirements.txt"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="resize_image.py image tools resize image">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>resize_image.py</h3>
+
+          <p>Resize image</p>
+
+          <div class="meta">
+            <span>275 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="resize_image.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/resize_image.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="rotate_image.py image tools rotate image">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Image Tools</div>
+
+          <h3>rotate_image.py</h3>
+
+          <p>Rotate image</p>
+
+          <div class="meta">
+            <span>282 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="rotate_image.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/rotate_image.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="rss_feed_reader.py web &amp; automation rss feed reader">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>rss_feed_reader.py</h3>
+
+          <p>Rss feed reader</p>
+
+          <div class="meta">
+            <span>556 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="rss_feed_reader.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/rss_feed_reader.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="scrip_generator.py python utilities scrip generator">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Python Utilities</div>
+
+          <h3>Scrip_generator.py</h3>
+
+          <p>Scrip generator</p>
+
+          <div class="meta">
+            <span>9.0 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="Scrip_generator.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/Scrip_generator.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="smtp_email_sender.py web &amp; automation smtp email sender">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>smtp_email_sender.py</h3>
+
+          <p>Smtp email sender</p>
+
+          <div class="meta">
+            <span>566 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="smtp_email_sender.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/smtp_email_sender.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="split_video_into_clips.py media tools split video into clips">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>split_video_into_clips.py</h3>
+
+          <p>Split video into clips</p>
+
+          <div class="meta">
+            <span>504 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="split_video_into_clips.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/split_video_into_clips.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="ssh_command_executor.py web &amp; automation ssh command executor">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>ssh_command_executor.py</h3>
+
+          <p>Ssh command executor</p>
+
+          <div class="meta">
+            <span>381 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="ssh_command_executor.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/ssh_command_executor.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="stock_price_fetcher.py web &amp; automation stock price fetcher">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>stock_price_fetcher.py</h3>
+
+          <p>Stock price fetcher</p>
+
+          <div class="meta">
+            <span>292 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="stock_price_fetcher.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/stock_price_fetcher.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="system_info.py system utilities system info">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">System Utilities</div>
+
+          <h3>system_info.py</h3>
+
+          <p>System info</p>
+
+          <div class="meta">
+            <span>266 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="system_info.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/system_info.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="text_file_combiner.py files &amp; folders text file combiner">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>text_file_combiner.py</h3>
+
+          <p>Text file combiner</p>
+
+          <div class="meta">
+            <span>393 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="text_file_combiner.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/text_file_combiner.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="text_file_sorter.py files &amp; folders text file sorter">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>text_file_sorter.py</h3>
+
+          <p>Text file sorter</p>
+
+          <div class="meta">
+            <span>246 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="text_file_sorter.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/text_file_sorter.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="text_file_word_count.py files &amp; folders text file word count">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>text_file_word_count.py</h3>
+
+          <p>Text file word count</p>
+
+          <div class="meta">
+            <span>259 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="text_file_word_count.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/text_file_word_count.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="text_to_speech.py documents &amp; text text to speech">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Documents &amp; Text</div>
+
+          <h3>text_to_speech.py</h3>
+
+          <p>Text to speech</p>
+
+          <div class="meta">
+            <span>112 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="text_to_speech.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/text_to_speech.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="unzip_files_infolder.py files &amp; folders unzip files infolder">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Files &amp; Folders</div>
+
+          <h3>Unzip_files_infolder.py</h3>
+
+          <p>Unzip files infolder</p>
+
+          <div class="meta">
+            <span>1.6 KB</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="Unzip_files_infolder.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/Unzip_files_infolder.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="url_checker.py web &amp; automation url checker">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>url_checker.py</h3>
+
+          <p>Url checker</p>
+
+          <div class="meta">
+            <span>212 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="url_checker.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/url_checker.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="url_shortener.py web &amp; automation url shortener">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>url_shortener.py</h3>
+
+          <p>Url shortener</p>
+
+          <div class="meta">
+            <span>424 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="url_shortener.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/url_shortener.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="weather_alert.py web &amp; automation weather alert">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>weather_alert.py</h3>
+
+          <p>Weather alert</p>
+
+          <div class="meta">
+            <span>481 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="weather_alert.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/weather_alert.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="weather_forecast.py web &amp; automation weather forecast">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>weather_forecast.py</h3>
+
+          <p>Weather forecast</p>
+
+          <div class="meta">
+            <span>411 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="weather_forecast.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/weather_forecast.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="weather_info.py web &amp; automation weather info">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>weather_info.py</h3>
+
+          <p>Weather info</p>
+
+          <div class="meta">
+            <span>316 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="weather_info.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/weather_info.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="web_page_screenshot.py web &amp; automation web page screenshot">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>web_page_screenshot.py</h3>
+
+          <p>Web page screenshot</p>
+
+          <div class="meta">
+            <span>155 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="web_page_screenshot.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/web_page_screenshot.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="web_scraper.py web &amp; automation web scraper">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>web_scraper.py</h3>
+
+          <p>Web scraper</p>
+
+          <div class="meta">
+            <span>225 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="web_scraper.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/web_scraper.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="website_status_checker.py web &amp; automation website status checker">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Web &amp; Automation</div>
+
+          <h3>website_status_checker.py</h3>
+
+          <p>Website status checker</p>
+
+          <div class="meta">
+            <span>326 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="website_status_checker.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/website_status_checker.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="xml_to_json.py data &amp; formats xml to json">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Data &amp; Formats</div>
+
+          <h3>xml_to_json.py</h3>
+
+          <p>Xml to json</p>
+
+          <div class="meta">
+            <span>290 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="xml_to_json.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/xml_to_json.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+      <article class="card" data-search="youtube_video_downloader.py media tools youtube video downloader">
+        <div class="icon">🐍</div>
+
+        <div class="card-body">
+          <div class="category">Media Tools</div>
+
+          <h3>youtube_video_downloader.py</h3>
+
+          <p>Youtube video downloader</p>
+
+          <div class="meta">
+            <span>263 B</span>
+            <span>.py</span>
+          </div>
+
+          <div class="actions">
+            <a href="youtube_video_downloader.py" target="_blank">Open</a>
+            <a
+              href="https://github.com/Fanu2/Python-Utility-Scripts/blob/main/youtube_video_downloader.py"
+              target="_blank"
+            >GitHub</a>
+          </div>
+        </div>
+      </article>
+    
+  </section>
+
+  <div class="empty" id="empty">
+    No utilities match your search.
+  </div>
+
+</main>
+
+<footer>
+  <strong>JASS Python Utility Scripts</strong><br>
+  Built and maintained as part of the JASS Digital Lab.
+</footer>
+
+<script>
+const search = document.getElementById("search");
+const cards = [...document.querySelectorAll(".card")];
+const chips = [...document.querySelectorAll(".chip")];
+const empty = document.getElementById("empty");
+
+let activeCategory = "All";
+
+function filter() {
+  const query = search.value.trim().toLowerCase();
+  let visible = 0;
+
+  cards.forEach(card => {
+    const matchesSearch =
+      !query ||
+      card.dataset.search.includes(query);
+
+    const cardCategory =
+      card.querySelector(".category")?.textContent || "";
+
+    const matchesCategory =
+      activeCategory === "All" ||
+      cardCategory === activeCategory;
+
+    const show =
+      matchesSearch && matchesCategory;
+
+    card.style.display = show ? "" : "flex";
+
+    if (show) visible++;
+  });
+
+  empty.style.display =
+    visible === 0 ? "block" : "none";
+}
+
+search.addEventListener("input", filter);
+
+chips.forEach(chip => {
+  chip.addEventListener("click", () => {
+
+    chips.forEach(c =>
+      c.classList.remove("active")
+    );
+
+    chip.classList.add("active");
+
+    activeCategory =
+      chip.dataset.category;
+
+    filter();
+  });
+});
+</script>
+
 </body>
 </html>
